@@ -28,6 +28,12 @@ public class UserService {
 
   @Autowired private ModelMapper modelMapper;
 
+  /**
+   * Create a new user with roles. If the role does not exist, it will be created. 
+   * If the role already exists, it will be fetched from the database.
+   * @param userDTO The user details that include the username, password, and roles.
+   * @return The created user with roles, an instance of UserDTO.
+   */
   public UserDTO createUserWithRoles(CreateUserDTO userDTO) {
     User user = new User();
     user.setUsername(userDTO.getUsername());
@@ -51,6 +57,11 @@ public class UserService {
     return modelMapper.map(savedUser, UserDTO.class);
   }
 
+  /**
+   * Get all users. Convert the user entities to UserDTOs because the User entity should not be
+   * exposed to the client.
+   * @return A list of all users, instances of UserDTO.
+   */
   public List<UserDTO> getAllUsers() {
     List<User> users = userRepository.findAll();
     return users.stream()
@@ -58,10 +69,22 @@ public class UserService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Get a user by ID. Convert the user entity to UserDTO because the User entity should not be
+   * exposed to the client.
+   * @param id The ID of the user to fetch.
+   * @return The user with the given ID, an instance of UserDTO.
+   */
   public Optional<UserDTO> getUserById(Long id) {
     return userRepository.findById(id).map(user -> modelMapper.map(user, UserDTO.class));
   }
 
+  /**
+   * Update a user. If the user does not exist, a RuntimeException will be thrown.
+   * @param id The ID of the user to update.
+   * @param userDetails The updated user details.
+   * @return The updated user, an instance of UserDTO.
+   */
   public UserDTO updateUser(Long id, UpdateUserDTO userDetails) {
     User user =
         userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
