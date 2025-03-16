@@ -20,18 +20,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-  @Autowired private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-  @Autowired private RoleRepository roleRepository;
+  @Autowired
+  private RoleRepository roleRepository;
 
-  @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
-  @Autowired private ModelMapper modelMapper;
+  @Autowired
+  private ModelMapper modelMapper;
 
   /**
-   * Create a new user with roles. If the role does not exist, it will be created. 
+   * Create a new user with roles. If the role does not exist, it will be created.
    * If the role already exists, it will be fetched from the database.
-   * @param userDTO The user details that include the username, password, and roles.
+   * 
+   * @param userDTO The user details that include the username, password, and
+   *                roles.
    * @return The created user with roles, an instance of UserDTO.
    */
   public UserDTO createUserWithRoles(CreateUserDTO userDTO) {
@@ -42,13 +48,12 @@ public class UserService {
     Set<Role> roles = new HashSet<>();
     for (String roleName : userDTO.getRoles()) {
       Optional<Role> roleOpt = roleRepository.findByName(roleName);
-      Role role =
-          roleOpt.orElseGet(
-              () -> {
-                Role newRole = new Role();
-                newRole.setName(roleName);
-                return roleRepository.save(newRole);
-              });
+      Role role = roleOpt.orElseGet(
+          () -> {
+            Role newRole = new Role();
+            newRole.setName(roleName);
+            return roleRepository.save(newRole);
+          });
       roles.add(role);
     }
 
@@ -58,8 +63,8 @@ public class UserService {
   }
 
   /**
-   * Get all users. Convert the user entities to UserDTOs because the User entity should not be
-   * exposed to the client.
+   * Get all users. Convert the user entities to UserDTOs
+   * 
    * @return A list of all users, instances of UserDTO.
    */
   public List<UserDTO> getAllUsers() {
@@ -70,8 +75,8 @@ public class UserService {
   }
 
   /**
-   * Get a user by ID. Convert the user entity to UserDTO because the User entity should not be
-   * exposed to the client.
+   * Get a user by ID.
+   * 
    * @param id The ID of the user to fetch.
    * @return The user with the given ID, an instance of UserDTO.
    */
@@ -80,14 +85,14 @@ public class UserService {
   }
 
   /**
-   * Update a user. If the user does not exist, a RuntimeException will be thrown.
-   * @param id The ID of the user to update.
+   * Update a user.
+   * 
+   * @param id          The ID of the user to update.
    * @param userDetails The updated user details.
    * @return The updated user, an instance of UserDTO.
    */
   public UserDTO updateUser(Long id, UpdateUserDTO userDetails) {
-    User user =
-        userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+    User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
 
     System.out.println(userDetails);
     user.setUsername(userDetails.getUsername());
@@ -112,7 +117,15 @@ public class UserService {
     return modelMapper.map(updatedUser, UserDTO.class);
   }
 
+  /**
+   * Delete a user by ID.
+   * 
+   * @param id The ID of the user to delete.
+   */
   public void deleteUser(Long id) {
+    if (!userRepository.existsById(id)) {
+      throw new RuntimeException("User not found!");
+    }
     userRepository.deleteById(id);
   }
 }
