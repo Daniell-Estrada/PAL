@@ -1,6 +1,9 @@
-package com.example.pal.dto;
+package com.example.pal.dto.user;
 
 import java.util.Set;
+
+import com.example.pal.dto.role.RoleDTO;
+
 import lombok.Data;
 
 @Data

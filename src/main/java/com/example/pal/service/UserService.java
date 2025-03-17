@@ -1,8 +1,6 @@
 package com.example.pal.service;
 
-import com.example.pal.dto.CreateUserDTO;
-import com.example.pal.dto.UpdateUserDTO;
-import com.example.pal.dto.UserDTO;
+import com.example.pal.dto.user.*;
 import com.example.pal.model.Role;
 import com.example.pal.model.User;
 import com.example.pal.repository.RoleRepository;

@@ -1,8 +1,8 @@
 package com.example.pal.controller;
 
-import com.example.pal.dto.CreateUserDTO;
-import com.example.pal.dto.UpdateUserDTO;
-import com.example.pal.dto.UserDTO;
+import com.example.pal.dto.user.CreateUserDTO;
+import com.example.pal.dto.user.UpdateUserDTO;
+import com.example.pal.dto.user.UserDTO;
 import com.example.pal.service.UserService;
 import java.util.List;
 import java.util.Optional;

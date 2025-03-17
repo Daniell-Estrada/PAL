@@ -1,4 +1,4 @@
-package com.example.pal.dto;
+package com.example.pal.dto.user;
 
 import java.util.Set;
 import lombok.Data;
