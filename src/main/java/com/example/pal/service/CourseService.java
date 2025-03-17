@@ -93,7 +93,7 @@ public class CourseService {
         .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
   }
 
-  private void configureModelMapper(Class<?> sourceClass, Class<?> destinationClass) {
+  private void configureModelMapper(Class<?> sourceClass, Class<Course> destinationClass) {
     modelMapper.getConfiguration().setAmbiguityIgnored(true);
     modelMapper
         .typeMap(sourceClass, destinationClass)
