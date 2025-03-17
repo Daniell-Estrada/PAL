@@ -22,8 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserController {
 
-  @Autowired
-  private UserService userService;
+  @Autowired private UserService userService;
 
   @PostMapping("/create")
   public ResponseEntity<UserDTO> createUser(@ModelAttribute CreateUserDTO userDTO) {
@@ -45,8 +44,7 @@ public class UserController {
   @PutMapping("/update/{id}")
   public ResponseEntity<UserDTO> updateUser(
       @PathVariable Long id, @RequestBody UpdateUserDTO userDetails) {
-    UserDTO updatedUser = userService.updateUser(id, userDetails);
-    return ResponseEntity.ok(updatedUser);
+    return ResponseEntity.ok(userService.updateUser(id, userDetails));
   }
 
   @DeleteMapping("/delete/{id}")
