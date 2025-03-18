@@ -2,10 +2,8 @@ package com.example.pal.dto.content;
 
 import lombok.Data;
 
-
 @Data
-public class ContentDTO {
-    private Long id;
+public class CreateContentDTO {
     private String type;
     private String url;
     private Long courseId;

@@ -1,65 +1,69 @@
 package com.example.pal.service;
 
 import com.example.pal.dto.content.ContentDTO;
-import com.example.pal.dto.file.FileDTO;
+import com.example.pal.dto.content.CreateContentDTO;
 import com.example.pal.model.Content;
 import com.example.pal.model.Course;
-import com.example.pal.model.File;
 import com.example.pal.repository.ContentRepository;
 import com.example.pal.repository.CourseRepository;
-import com.example.pal.repository.FileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ContentService {
+    private final ContentRepository contentRepository;
+    private final CourseRepository courseRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
-
-    @Autowired private ContentRepository contentRepository;
-    @Autowired private FileRepository fileRepository;
-    @Autowired private CourseRepository courseRepository;
-
-    public ContentDTO createContent(Long courseId, String type) {
-        Course course = courseRepository.findById(courseId)
+    public ContentDTO uploadContent(CreateContentDTO dto) {
+        Course course = courseRepository.findById(dto.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
         Content content = new Content();
-        content.setType(type);
         content.setCourse(course);
+        content.setType(dto.getType());
+        content.setUrl(dto.getUrl());
 
-        contentRepository.save(content);
-        return convertToDTO(content);
+        Content savedContent = contentRepository.save(content);
+        return mapToDTO(savedContent);
     }
 
-    public FileDTO uploadFile(Long contentId, MultipartFile file) throws Exception {
-        Content content = contentRepository.findById(contentId)
+    public List<ContentDTO> getAllContent() {
+        return contentRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<ContentDTO> getContentById(Long id) {
+        return contentRepository.findById(id).map(this::mapToDTO);
+    }
+
+    public ContentDTO updateContent(Long id, CreateContentDTO dto) {
+        Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contenido no encontrado"));
 
-        Path filePath = Path.of(UPLOAD_DIR + file.getOriginalFilename());
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        content.setType(dto.getType());
+        content.setUrl(dto.getUrl());
 
-        File fileEntity = new File();
-        fileEntity.setFileUrl(filePath.toString());
-        fileEntity.setContent(content);
-
-        fileRepository.save(fileEntity);
-        return new FileDTO(fileEntity.getId(), fileEntity.getFileUrl());
+        return mapToDTO(contentRepository.save(content));
     }
 
-    private ContentDTO convertToDTO(Content content) {
+    public void deleteContent(Long id) {
+        contentRepository.deleteById(id);
+    }
+
+    private ContentDTO mapToDTO(Content content) {
         ContentDTO dto = new ContentDTO();
         dto.setId(content.getId());
-        dto.setType(content.getType());
         dto.setCourseId(content.getCourse().getId());
-        dto.setFiles(content.getFiles().stream()
-            .map(file -> new FileDTO(file.getId(), file.getFileUrl()))
-            .collect(Collectors.toList()));
+        dto.setType(content.getType());
+        dto.setUrl(content.getUrl());
         return dto;
     }
 }
