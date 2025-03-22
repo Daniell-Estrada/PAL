@@ -1,11 +1,10 @@
 package com.example.pal.model;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
@@ -18,4 +17,5 @@ public class Category {
 
   @Column(nullable = false, unique = true)
   private String name;
+
 }
