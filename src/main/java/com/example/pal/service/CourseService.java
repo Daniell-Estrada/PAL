@@ -53,17 +53,17 @@ public class CourseService {
   }
 
   public CourseDTO updateCourse(Long id, UpdateCourseDTO courseDetails) {
-    Course existingCourse = findCourseById(id);
+    Course course = findCourseById(id);
+
     Category category = findCategoryById(courseDetails.getCategoryId());
     User instructor = findUserById(courseDetails.getInstructorId());
 
     configureModelMapper(UpdateCourseDTO.class, Course.class);
 
-    modelMapper.map(courseDetails, existingCourse);
-    existingCourse.setCategory(category);
-    existingCourse.setInstructor(instructor);
+    course = modelMapper.map(courseDetails, Course.class);
+    course.setId(id);
 
-    Course updatedCourse = courseRepository.save(existingCourse);
+    Course updatedCourse = courseRepository.save(course);
     return modelMapper.map(updatedCourse, CourseDTO.class);
   }
 
@@ -95,6 +95,7 @@ public class CourseService {
 
   private void configureModelMapper(Class<?> sourceClass, Class<Course> destinationClass) {
     modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
     modelMapper
         .typeMap(sourceClass, destinationClass)
         .addMappings(mapper -> mapper.skip(Course::setId));
