@@ -11,20 +11,17 @@ import com.example.pal.repository.CourseRepository;
 import com.example.pal.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CourseService {
-
   @Autowired private CourseRepository courseRepository;
-
   @Autowired private ModelMapper modelMapper;
-
   @Autowired private CategoryRepository categoryRepository;
-
   @Autowired private UserRepository userRepository;
 
   public CourseDTO createCourse(CreateCourseDTO courseDTO) {
@@ -42,9 +39,12 @@ public class CourseService {
   }
 
   public List<CourseDTO> getAllCourses() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    System.out.println("Username: " + username);
     return courseRepository.findAll().stream()
         .map(course -> modelMapper.map(course, CourseDTO.class))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public CourseDTO getCourseById(Long id) {
@@ -53,14 +53,14 @@ public class CourseService {
   }
 
   public CourseDTO updateCourse(Long id, UpdateCourseDTO courseDetails) {
-    Course course = findCourseById(id);
+    findCourseById(id);
 
-    Category category = findCategoryById(courseDetails.getCategoryId());
-    User instructor = findUserById(courseDetails.getInstructorId());
+    findCategoryById(courseDetails.getCategoryId());
+    findUserById(courseDetails.getInstructorId());
 
     configureModelMapper(UpdateCourseDTO.class, Course.class);
 
-    course = modelMapper.map(courseDetails, Course.class);
+    Course course = modelMapper.map(courseDetails, Course.class);
     course.setId(id);
 
     Course updatedCourse = courseRepository.save(course);

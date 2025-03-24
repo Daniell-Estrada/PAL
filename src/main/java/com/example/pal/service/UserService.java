@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,13 +16,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
-  @Autowired private UserRepository userRepository;
-
-  @Autowired private RoleRepository roleRepository;
-
   @Autowired private PasswordEncoder passwordEncoder;
-
+  @Autowired private UserRepository userRepository;
+  @Autowired private RoleRepository roleRepository;
   @Autowired private ModelMapper modelMapper;
 
   /**
@@ -63,9 +58,7 @@ public class UserService {
    */
   public List<UserDTO> getAllUsers() {
     List<User> users = userRepository.findAll();
-    return users.stream()
-        .map(user -> modelMapper.map(user, UserDTO.class))
-        .collect(Collectors.toList());
+    return users.stream().map(user -> modelMapper.map(user, UserDTO.class)).toList();
   }
 
   /**
@@ -76,6 +69,10 @@ public class UserService {
    */
   public Optional<UserDTO> getUserById(Long id) {
     return userRepository.findById(id).map(user -> modelMapper.map(user, UserDTO.class));
+  }
+
+  public User getUserByUsername(String username) {
+    return userRepository.findByUsername(username);
   }
 
   /**

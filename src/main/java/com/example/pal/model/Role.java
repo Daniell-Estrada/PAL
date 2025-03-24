@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -19,7 +20,13 @@ public class Role {
 
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
   @JsonIgnore
+  @ToString.Exclude
   private Set<User> users;
+
+  @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+  @JsonIgnore
+  @ToString.Exclude
+  private Set<Permission> permissions;
 
   @Override
   public boolean equals(Object o) {

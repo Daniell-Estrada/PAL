@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.Set;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -35,5 +36,6 @@ public class User {
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
   @JsonIgnore
+  @ToString.Exclude
   private Set<Role> roles;
 }
