@@ -45,9 +45,13 @@ public class ContentController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ContentDTO> updateContent(@PathVariable Long id, @RequestBody CreateContentDTO dto) {
-        return ResponseEntity.ok(contentService.updateContent(id, dto));
-    }
+public ResponseEntity<ContentDTO> updateContent(
+        @PathVariable Long id,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam("type") String type) {
+
+    return ResponseEntity.ok(contentService.updateContent(id, file, type));
+}
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteContent(@PathVariable Long id) {

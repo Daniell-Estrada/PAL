@@ -36,6 +36,7 @@ public class ContentService {
             throw new RuntimeException("El archivo no puede estar vacío");
         }
     
+        // Generar nombre único y ruta de almacenamiento
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         String filePath = "uploads/" + fileName;
     
@@ -47,14 +48,22 @@ public class ContentService {
             throw new RuntimeException("Error al guardar el archivo", e);
         }
     
+        // Extraer la extensión del archivo
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        }
+    
+        // Guardar en la base de datos
         Content content = new Content();
         content.setCourse(course);
-        content.setType(file.getContentType());
-        content.setUrl(filePath);
+        content.setType(extension); // Aquí ahora se guarda la extensión del archivo
+        content.setUrl(filePath);   // Aquí se guarda la ruta del archivo
     
         Content savedContent = contentRepository.save(content);
         return mapToDTO(savedContent);
-    }
+    }    
     
     public List<ContentDTO> getAllContent() {
         return contentRepository.findAll().stream()
@@ -66,14 +75,17 @@ public class ContentService {
         return contentRepository.findById(id).map(this::mapToDTO);
     }
 
-    public ContentDTO updateContent(Long id, CreateContentDTO dto) {
+    public ContentDTO updateContent(Long id, MultipartFile file, String type) {
         Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contenido no encontrado"));
     
-        MultipartFile file = dto.getFile();
+        // Si se sube un nuevo archivo, actualizar la URL
         if (file != null && !file.isEmpty()) {
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String filePath = "uploads/" + fileName;
+            String fileUrl = "http://localhost:8080/" + filePath; // Generamos una URL pública
+            content.setUrl(fileUrl);
+
     
             try {
                 Path path = Paths.get(filePath);
@@ -85,11 +97,12 @@ public class ContentService {
             }
         }
     
-        content.setType(file != null ? file.getContentType() : content.getType());
-        
+        // Actualizar el tipo de contenido con el valor recibido
+        content.setType(type);
+    
         return mapToDTO(contentRepository.save(content));
     }
-
+    
     public void deleteContent(Long id) {
         contentRepository.deleteById(id);
     }
