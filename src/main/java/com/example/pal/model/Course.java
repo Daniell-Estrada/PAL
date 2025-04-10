@@ -9,6 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Data
 @Entity
@@ -24,6 +27,9 @@ public class Course {
   @Column(nullable = false)
   private String description;
 
+  
+  @NotNull(message = "El curso debe tener precio")
+  @PositiveOrZero(message = "El precio del curso no puede ser negativo")
   @Column(nullable = false)
   private double price;
 

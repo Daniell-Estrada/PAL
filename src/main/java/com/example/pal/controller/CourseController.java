@@ -49,4 +49,24 @@ public class CourseController {
     courseService.deleteCourse(id);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/free")
+  public ResponseEntity<List<CourseDTO>> getFreeCourses() {
+    List<CourseDTO> freeCourses = courseService.getFreeCourses();
+    if (freeCourses.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(freeCourses);
+  }
+
+  @GetMapping("/by-category/{categoryName}")
+  public ResponseEntity<List<CourseDTO>> getCoursesByCategory(@PathVariable String categoryName) {
+    System.out.print(categoryName);
+    List<CourseDTO> courses = courseService.getCoursesByCategory(categoryName);
+    if (courses.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(courses);
+  }
+  
 }

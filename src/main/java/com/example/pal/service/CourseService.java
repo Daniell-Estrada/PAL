@@ -19,13 +19,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class CourseService {
 
-  @Autowired private CourseRepository courseRepository;
+  @Autowired
+  private CourseRepository courseRepository;
 
-  @Autowired private ModelMapper modelMapper;
+  @Autowired
+  private ModelMapper modelMapper;
 
-  @Autowired private CategoryRepository categoryRepository;
+  @Autowired
+  private CategoryRepository categoryRepository;
 
-  @Autowired private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   public CourseDTO createCourse(CreateCourseDTO courseDTO) {
     Category category = findCategoryById(courseDTO.getCategoryId());
@@ -74,6 +78,20 @@ public class CourseService {
     courseRepository.deleteById(id);
   }
 
+  public List<CourseDTO> getFreeCourses() {
+    List<Course> freeCourses = courseRepository.findByPrice(0.0);
+    return freeCourses.stream()
+        .map(course -> modelMapper.map(course, CourseDTO.class))
+        .toList();
+  }
+
+  public List<CourseDTO> getCoursesByCategory(String categoryName) {
+    List<Course> courses = courseRepository.findByCategoryName(categoryName);
+    return courses.stream()
+        .map(course -> modelMapper.map(course, CourseDTO.class))
+        .toList();
+  }
+
   private Category findCategoryById(Long categoryId) {
     return categoryRepository
         .findById(categoryId)
@@ -93,10 +111,16 @@ public class CourseService {
         .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
   }
 
+  /**
+   * 
+   * @param sourceClass
+   * @param destinationClass
+   */
   private void configureModelMapper(Class<?> sourceClass, Class<Course> destinationClass) {
     modelMapper.getConfiguration().setAmbiguityIgnored(true);
     modelMapper
         .typeMap(sourceClass, destinationClass)
         .addMappings(mapper -> mapper.skip(Course::setId));
   }
+
 }

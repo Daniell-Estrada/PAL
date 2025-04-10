@@ -2,8 +2,12 @@ package com.example.pal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.Objects;
 import java.util.Set;
+
+
 import lombok.Data;
 
 @Data
@@ -14,8 +18,11 @@ public class Role {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String name;
+
+	@NotBlank(message="El nombre del rol no puede estar vacío")
+	@Pattern(regexp="admin|instructor|estudiante",message="El rol debe ser 'admin', 'instructor' o 'estudiante'")
+    @Column(nullable = false, unique = true)
+    private String name;
 
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
   @JsonIgnore
