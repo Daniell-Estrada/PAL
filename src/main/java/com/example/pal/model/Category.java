@@ -1,5 +1,7 @@
 package com.example.pal.model;
 
+import com.example.pal.validation.UniqueCategoryName;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ public class Category {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @UniqueCategoryName
   @Column(nullable = false, unique = true)
   private String name;
 

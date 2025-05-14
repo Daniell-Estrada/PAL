@@ -23,20 +23,26 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(
-            auth -> auth.requestMatchers("/api/**").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/api/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-ui/index.html")
+            .permitAll()
+            .anyRequest().authenticated())
         .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
     return http.build();
   }
 
   @Bean
   public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-    UserDetails admin =
-        User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("admin123"))
-            .roles("ADMIN")
-            .build();
+    UserDetails admin = User.builder()
+        .username("admin")
+        .password(passwordEncoder.encode("admin123"))
+        .roles("ADMIN")
+        .build();
     return new InMemoryUserDetailsManager(admin);
   }
 }

@@ -11,12 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.pal.model.User;
 
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-  @Autowired private UserService userService;
+  @Autowired
+  private UserService userService;
 
   @PostMapping("/create")
   public ResponseEntity<UserDTO> createUser(@ModelAttribute CreateUserDTO userDTO) {
@@ -48,11 +48,12 @@ public class UserController {
   }
 
   @GetMapping("/by-role")
-    public ResponseEntity<List<User>> getUsersByRole(@RequestParam String roleName) {
-    	List<User> users = userService.getUsersByRole(roleName);
-    	if (users.isEmpty()) {
-            return ResponseEntity.noContent().build(); 
-        }
-        return ResponseEntity.ok(users);
+  public ResponseEntity<List<UserDTO>> getUsersByRole(@RequestParam String roleName) {
+    List<UserDTO> users = userService.getUsersByRole(roleName);
+    if (users.isEmpty()) {
+      return ResponseEntity.noContent().build();
     }
+    return ResponseEntity.ok(users);
+  }
+
 }

@@ -20,7 +20,7 @@ public class Role {
 
 
 	@NotBlank(message="El nombre del rol no puede estar vacío")
-	@Pattern(regexp="admin|instructor|estudiante",message="El rol debe ser 'admin', 'instructor' o 'estudiante'")
+	@Pattern(regexp="ADMIN|INSTRUCTOR|ESTUDIANTE",message="El rol debe ser 'ADMIN', 'INSTRUCTOR' o 'ESTUDIANTE'")
     @Column(nullable = false, unique = true)
     private String name;
 
