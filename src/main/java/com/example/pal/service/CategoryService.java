@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryService {
 
-  @Autowired private CategoryRepository categoryRepository;
-  @Autowired private ModelMapper modelMapper;
+  @Autowired
+  private CategoryRepository categoryRepository;
+  @Autowired
+  private ModelMapper modelMapper;
 
   /**
    * Create a new category
@@ -58,15 +60,14 @@ public class CategoryService {
   /**
    * Update a category
    *
-   * @param id The ID of the category to update
+   * @param id          The ID of the category to update
    * @param categoryDTO The new details for the category
    * @return The updated category, an instance of CategoryDTO
    */
   public CategoryDTO updateCategory(Long id, CreateCategoryDTO categoryDTO) {
-    Category category =
-        categoryRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Category not found"));
+    Category category = categoryRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Category not found"));
 
     category.setName(categoryDTO.getName());
 
@@ -86,4 +87,17 @@ public class CategoryService {
     }
     categoryRepository.deleteById(id);
   }
+
+  /**
+   * Get categories by name
+   *
+   * @param name The name of the category to search for
+   * @return A list of categories with the given name, instances of CategoryDTO
+   */
+  public List<CategoryDTO> getCategoriesByName(String name) {
+    Optional<Category> categoryOpt = categoryRepository.findByName(name);
+    return categoryOpt
+        .map(category -> List.of(modelMapper.map(category, CategoryDTO.class)))
+        .orElse(List.of());
+}
 }

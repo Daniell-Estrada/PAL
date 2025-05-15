@@ -44,4 +44,13 @@ public class CategoryController {
     categoryService.deleteCategory(id);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/by-name")
+  public ResponseEntity<List<CategoryDTO>> getCategoriesByName(@RequestParam String name) {
+    List<CategoryDTO> categories = categoryService.getCategoriesByName(name);
+    if (categories.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(categories);
+  }
 }

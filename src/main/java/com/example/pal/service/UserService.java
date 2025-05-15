@@ -127,6 +127,12 @@ public class UserService {
     userRepository.deleteById(id);
   }
 
+  /**
+   * Get users by role name.
+   *
+   * @param roleName The name of the role to filter users by.
+   * @return A list of users with the specified role, instances of UserDTO.
+   */
   public List<UserDTO> getUsersByRole(String roleName) {
     List<User> users = userRepository.findUsersByRole(roleName);
     return users.stream()

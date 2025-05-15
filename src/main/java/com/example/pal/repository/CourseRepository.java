@@ -16,8 +16,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
   @Query("SELECT c FROM Course c WHERE c.price = (:price)")
   List<Course> findByPrice(@Param("price") double price);
 
-  // findByCategoryName
-  @Query("SELECT c FROM Course c WHERE c.category.name = (:categoryName)")
+  @Query("SELECT c FROM Course c WHERE LOWER(c.category.name) = LOWER(:categoryName)")
   List<Course> findByCategoryName(@Param("categoryName") String categoryName);
 
 }

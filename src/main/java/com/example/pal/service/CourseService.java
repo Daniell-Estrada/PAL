@@ -59,8 +59,8 @@ public class CourseService {
   public CourseDTO updateCourse(Long id, UpdateCourseDTO courseDetails) {
     Course course = findCourseById(id);
 
-    Category category = findCategoryById(courseDetails.getCategoryId());
-    User instructor = findUserById(courseDetails.getInstructorId());
+    // Category category = findCategoryById(courseDetails.getCategoryId());
+    // User instructor = findUserById(courseDetails.getInstructorId());
 
     configureModelMapper(UpdateCourseDTO.class, Course.class);
 

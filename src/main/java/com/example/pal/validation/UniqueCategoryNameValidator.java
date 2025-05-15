@@ -18,3 +18,7 @@ public class UniqueCategoryNameValidator implements ConstraintValidator<UniqueCa
         return !categoryRepository.existsByName(value);
     }
 }
+
+
+
+/// electronica false
