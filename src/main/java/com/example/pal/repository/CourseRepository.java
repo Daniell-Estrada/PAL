@@ -11,12 +11,26 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
+
   Course findByTitle(String title);
 
-  @Query("SELECT c FROM Course c WHERE c.price = (:price)")
+  @Query("SELECT c FROM Course c WHERE c.price = :price")
   List<Course> findByPrice(@Param("price") double price);
 
   @Query("SELECT c FROM Course c WHERE LOWER(c.category.name) = LOWER(:categoryName)")
   List<Course> findByCategoryName(@Param("categoryName") String categoryName);
 
+  @Query("SELECT c FROM Course c " +
+         "WHERE " +
+         "(:keyword IS NULL OR " +
+         "LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+         "LOWER(c.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+         "LOWER(c.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+         "AND (:free IS NULL OR c.free = :free) " +
+         "AND (:difficulty IS NULL OR LOWER(c.difficulty) = LOWER(:difficulty))")
+  List<Course> searchCourses(
+      @Param("keyword") String keyword,
+      @Param("free") Boolean free,
+      @Param("difficulty") String difficulty
+  );
 }

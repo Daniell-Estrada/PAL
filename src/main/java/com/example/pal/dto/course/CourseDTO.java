@@ -8,6 +8,8 @@ public class CourseDTO {
   private String title;
   private String description;
   private double price;
-  private Long instructorId;
   private Long categoryId;
+  private Long instructorId;
+  private String difficulty;
+  private boolean free;
 }

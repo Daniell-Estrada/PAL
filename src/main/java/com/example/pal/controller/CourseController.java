@@ -1,6 +1,7 @@
 package com.example.pal.controller;
 
 import com.example.pal.dto.course.CourseDTO;
+import com.example.pal.dto.course.CourseSearchDTO;
 import com.example.pal.dto.course.CreateCourseDTO;
 import com.example.pal.dto.course.UpdateCourseDTO;
 import com.example.pal.service.CourseService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -68,5 +70,21 @@ public class CourseController {
     }
     return ResponseEntity.ok(courses);
   }
-  
+
+  @GetMapping("/search")
+  public List<CourseDTO> searchCourses(
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) Boolean free,
+      @RequestParam(required = false) String difficulty,
+      @RequestParam(required = false) String sortBy)
+  {
+    CourseSearchDTO dto = new CourseSearchDTO();
+    dto.setKeyword(keyword);
+    dto.setFree(free);
+    dto.setDifficulty(difficulty);
+    dto.setSortBy(sortBy);
+
+    return courseService.searchCourses(dto);
+}
+
 }

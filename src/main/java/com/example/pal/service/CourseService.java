@@ -1,6 +1,7 @@
 package com.example.pal.service;
 
 import com.example.pal.dto.course.CourseDTO;
+import com.example.pal.dto.course.CourseSearchDTO;
 import com.example.pal.dto.course.CreateCourseDTO;
 import com.example.pal.dto.course.UpdateCourseDTO;
 import com.example.pal.model.Category;
@@ -40,6 +41,8 @@ public class CourseService {
     Course course = modelMapper.map(courseDTO, Course.class);
     course.setCategory(category);
     course.setInstructor(instructor);
+    course.setDifficulty(courseDTO.getDifficulty());
+    course.setFree(courseDTO.isFree());
 
     Course savedCourse = courseRepository.save(course);
     return modelMapper.map(savedCourse, CourseDTO.class);
@@ -124,4 +127,20 @@ public class CourseService {
         .addMappings(mapper -> mapper.skip(Course::setId));
   }
 
+  public List<CourseDTO> searchCourses(CourseSearchDTO dto) {
+    List<Course> results = courseRepository.searchCourses(
+        dto.getKeyword(),
+        dto.getFree(),
+        dto.getDifficulty()
+    );
+
+    // Ordenamiento por fecha si se solicita
+    if ("date".equalsIgnoreCase(dto.getSortBy())) {
+        results.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())); // más recientes primero
+    }
+
+    return results.stream()
+        .map(course -> modelMapper.map(course, CourseDTO.class))
+        .collect(Collectors.toList());
+  }
 }

@@ -1,5 +1,7 @@
 package com.example.pal.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +33,15 @@ public class Course {
   @PositiveOrZero(message = "El precio del curso no puede ser negativo")
   @Column(nullable = false)
   private double price;
+
+    @Column(nullable = false)
+  private String difficulty; // básico, intermedio, avanzado
+
+  @Column(nullable = false)
+  private boolean free; // true = gratis (price == 0), false = pago (price > 0)
+
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt = LocalDateTime.now(); // fecha de creación
 
   @ManyToOne
   @JoinColumn(name = "instructor_id", nullable = false)
