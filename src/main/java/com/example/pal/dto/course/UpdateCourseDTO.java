@@ -9,4 +9,6 @@ public class UpdateCourseDTO {
   private double price;
   private Long instructorId;
   private Long categoryId;
+  private String difficulty;
+  private boolean free;
 }
