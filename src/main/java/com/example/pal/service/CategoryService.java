@@ -26,6 +26,9 @@ public class CategoryService {
    * @return
    */
   public CategoryDTO createCategory(CreateCategoryDTO categoryDTO) {
+    if (categoryRepository.existsByName(categoryDTO.getName())) {
+      throw new IllegalArgumentException("La categoría con el nombre '" + categoryDTO.getName() + "' ya existe.");
+    }
     Category category = new Category();
     category.setName(categoryDTO.getName());
 
@@ -69,6 +72,10 @@ public class CategoryService {
         .findById(id)
         .orElseThrow(() -> new RuntimeException("Category not found"));
 
+    if (categoryRepository.existsByName(categoryDTO.getName()) &&
+        !category.getName().equals(categoryDTO.getName())) {
+      throw new IllegalArgumentException("La categoría con el nombre '" + categoryDTO.getName() + "' ya existe.");
+    }
     category.setName(categoryDTO.getName());
 
     Category updatedCategory = categoryRepository.save(category);
@@ -99,5 +106,5 @@ public class CategoryService {
     return categoryOpt
         .map(category -> List.of(modelMapper.map(category, CategoryDTO.class)))
         .orElse(List.of());
-}
+  }
 }

@@ -39,13 +39,20 @@ public class UserService {
    *                roles.
    * @return The created user with roles, an instance of UserDTO.
    */
+  private static final Set<String> VALID_ROLES = Set.of("ADMIN", "INSTRUCTOR", "ESTUDIANTE");
+
   public UserDTO createUserWithRoles(CreateUserDTO userDTO) {
     User user = new User();
     user.setUsername(userDTO.getUsername());
     user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+    user.setEmail(userDTO.getEmail());
 
     Set<Role> roles = new HashSet<>();
     for (String roleName : userDTO.getRoles()) {
+      if (!VALID_ROLES.contains(roleName)) {
+        throw new IllegalArgumentException(
+            "El rol '" + roleName + "' no es válido. Debe ser ADMIN, INSTRUCTOR o ESTUDIANTE.");
+      }
       Optional<Role> roleOpt = roleRepository.findByName(roleName);
       Role role = roleOpt.orElseGet(
           () -> {
@@ -84,6 +91,20 @@ public class UserService {
   }
 
   /**
+   * Get a user by email.
+   *
+   * @param email The email of the user to fetch.
+   * @return The user with the given email, an instance of UserDTO.
+   */
+  public UserDTO getUserByEmail(String email) {
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      return null;
+    }
+    return modelMapper.map(user, UserDTO.class);
+  }
+
+  /**
    * Update a user.
    *
    * @param id          The ID of the user to update.
@@ -95,18 +116,26 @@ public class UserService {
 
     user.setUsername(userDetails.getUsername());
 
-    if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+    if (userDetails.getEmail() != null && !userDetails.getEmail().isEmpty()) {
+      user.setEmail(userDetails.getEmail());
+    }
+
+    if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
       user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
     }
 
     if (userDetails.getRoleIds() != null && !userDetails.getRoleIds().isEmpty()) {
       Set<Role> roles = new HashSet<>();
-      userDetails.getRoleIds().stream()
-          .map(roleRepository::findById)
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          .forEach(roles::add);
-
+      for (Long roleId : userDetails.getRoleIds()) {
+        Role role = roleRepository.findById(roleId)
+            .orElseThrow(() -> new IllegalArgumentException("El rol con id " + roleId + " no existe."));
+        // Validar nombre del rol
+        if (!VALID_ROLES.contains(role.getName())) {
+          throw new IllegalArgumentException(
+              "El rol '" + role.getName() + "' no es válido. Debe ser ADMIN, INSTRUCTOR o ESTUDIANTE.");
+        }
+        roles.add(role);
+      }
       user.setRoles(roles);
     }
 

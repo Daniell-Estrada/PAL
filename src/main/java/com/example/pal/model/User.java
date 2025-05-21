@@ -2,8 +2,7 @@ package com.example.pal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import java.util.Set;
 import lombok.Data;
 
@@ -21,6 +20,10 @@ public class User {
 
   @Column(nullable = false)
   private String password;
+
+  @Email(message = "El correo electrónico no es válido")
+  @Column(nullable = false, unique = true)
+  private String email;
 
   @NotNull(message = "El usuario debe tener al menos un rol")
   @Size(min = 1, message = "El usuario debe tener al menos un rol")

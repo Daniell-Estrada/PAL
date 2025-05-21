@@ -33,8 +33,15 @@ public class CourseService {
   private UserRepository userRepository;
 
   public CourseDTO createCourse(CreateCourseDTO courseDTO) {
-    Category category = findCategoryById(courseDTO.getCategoryId());
-    User instructor = findUserById(courseDTO.getInstructorId());
+    if (courseRepository.existsByTitle(courseDTO.getTitle())) {
+        throw new IllegalArgumentException("Ya existe un curso con ese título.");
+    }
+
+    Category category = categoryRepository.findById(courseDTO.getCategoryId())
+        .orElseThrow(() -> new IllegalArgumentException("La categoría no existe"));
+
+    User instructor = userRepository.findById(courseDTO.getInstructorId())
+        .orElseThrow(() -> new IllegalArgumentException("El instructor no existe"));
 
     configureModelMapper(CreateCourseDTO.class, Course.class);
 
@@ -42,11 +49,11 @@ public class CourseService {
     course.setCategory(category);
     course.setInstructor(instructor);
     course.setDifficulty(courseDTO.getDifficulty());
-    course.setFree(courseDTO.isFree());
+    course.setFree(courseDTO.getFree());
 
     Course savedCourse = courseRepository.save(course);
     return modelMapper.map(savedCourse, CourseDTO.class);
-  }
+}
 
   public List<CourseDTO> getAllCourses() {
     return courseRepository.findAll().stream()
@@ -131,12 +138,11 @@ public class CourseService {
     List<Course> results = courseRepository.searchCourses(
         dto.getKeyword(),
         dto.getFree(),
-        dto.getDifficulty()
-    );
+        dto.getDifficulty());
 
     // Ordenamiento por fecha si se solicita
     if ("date".equalsIgnoreCase(dto.getSortBy())) {
-        results.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())); // más recientes primero
+      results.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())); // más recientes primero
     }
 
     return results.stream()
