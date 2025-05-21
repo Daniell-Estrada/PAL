@@ -13,12 +13,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-  @Autowired private CategoryService categoryService;
+  @Autowired
+  private CategoryService categoryService;
 
   @PostMapping("/create")
-  public ResponseEntity<CategoryDTO> createCategory(@RequestBody CreateCategoryDTO categoryDTO) {
-    CategoryDTO category = categoryService.createCategory(categoryDTO);
-    return ResponseEntity.status(201).body(category);
+  public ResponseEntity<String> createCategory(@RequestBody CreateCategoryDTO categoryDTO) {
+    try {
+      CategoryDTO category = categoryService.createCategory(categoryDTO);
+      return ResponseEntity.status(201)
+          .body("Categoría creada exitosamente: " + category.getName());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(400).body("Error: " + e.getMessage());
+    }
   }
 
   @GetMapping("/all")
@@ -33,10 +39,14 @@ public class CategoryController {
   }
 
   @PutMapping("/update/{id}")
-  public ResponseEntity<CategoryDTO> updateCategory(
-      @PathVariable("id") Long id, @RequestBody CreateCategoryDTO categoryDTO) {
-    CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
-    return ResponseEntity.ok(updatedCategory);
+  public ResponseEntity<String> updateCategory(@PathVariable("id") Long id,
+      @RequestBody CreateCategoryDTO categoryDTO) {
+    try {
+      CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
+      return ResponseEntity.ok("Categoría actualizada exitosamente: " + updatedCategory.getName());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(400).body("Error: " + e.getMessage());
+    }
   }
 
   @DeleteMapping("/delete/{id}")

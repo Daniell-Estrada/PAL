@@ -13,6 +13,10 @@ import com.example.pal.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	User findByUsername(String username);
 
+	User findByEmail(String email);
+
+	boolean existsByEmail(String email);
+
 	@Query("SELECT u FROM User u JOIN u.roles r WHERE LOWER(r.name) = LOWER(:roleName)")
 	List<User> findUsersByRole(@Param("roleName") String roleName);
 }

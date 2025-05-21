@@ -5,6 +5,9 @@ import com.example.pal.dto.course.CourseSearchDTO;
 import com.example.pal.dto.course.CreateCourseDTO;
 import com.example.pal.dto.course.UpdateCourseDTO;
 import com.example.pal.service.CourseService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +28,7 @@ public class CourseController {
   @Autowired private CourseService courseService;
 
   @PostMapping("/create")
-  public ResponseEntity<CourseDTO> createCourse(@ModelAttribute CreateCourseDTO courseDTO) {
+  public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CreateCourseDTO courseDTO) {
     CourseDTO course = courseService.createCourse(courseDTO);
     return ResponseEntity.status(201).body(course);
   }

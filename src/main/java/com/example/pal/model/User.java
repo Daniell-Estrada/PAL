@@ -12,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Set;
@@ -31,6 +32,10 @@ public class User {
 
   @Column(nullable = false)
   private String password;
+
+  @Email(message = "El correo electrónico no es válido")
+  @Column(nullable = false, unique = true)
+  private String email;
 
   @NotNull(message = "El usuario debe tener al menos un rol")
   @Size(min = 1, message = "El usuario debe tener al menos un rol")

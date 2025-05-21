@@ -4,12 +4,14 @@ import com.example.pal.dto.user.CreateUserDTO;
 import com.example.pal.dto.user.UpdateUserDTO;
 import com.example.pal.dto.user.UserDTO;
 import com.example.pal.service.UserService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.example.pal.model.User;
+import org.springframework.web.bind.annotation.*;;
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,7 +21,7 @@ public class UserController {
   private UserService userService;
 
   @PostMapping("/create")
-  public ResponseEntity<UserDTO> createUser(@ModelAttribute CreateUserDTO userDTO) {
+  public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserDTO userDTO) {
     UserDTO user = userService.createUserWithRoles(userDTO);
     return ResponseEntity.status(201).body(user);
   }
@@ -54,6 +56,15 @@ public class UserController {
       return ResponseEntity.noContent().build();
     }
     return ResponseEntity.ok(users);
+  }
+
+  @GetMapping("/by-email")
+  public ResponseEntity<UserDTO> getUserByEmail(@RequestParam String email) {
+    UserDTO user = userService.getUserByEmail(email);
+    if (user == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(user);
   }
 
 }
