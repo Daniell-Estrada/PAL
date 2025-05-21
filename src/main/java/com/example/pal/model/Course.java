@@ -1,18 +1,11 @@
 package com.example.pal.model;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
+import java.util.Set;
+import lombok.Data;
 
 @Data
 @Entity
@@ -28,13 +21,12 @@ public class Course {
   @Column(nullable = false)
   private String description;
 
-  
   @NotNull(message = "El curso debe tener precio")
   @PositiveOrZero(message = "El precio del curso no puede ser negativo")
   @Column(nullable = false)
   private double price;
 
-    @Column(nullable = false)
+  @Column(nullable = false)
   private String difficulty; // básico, intermedio, avanzado
 
   @Column(nullable = false)
@@ -43,11 +35,26 @@ public class Course {
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt = LocalDateTime.now(); // fecha de creación
 
-  @ManyToOne
-  @JoinColumn(name = "instructor_id", nullable = false)
-  private User instructor;
+  @OneToMany(mappedBy = "course")
+  private Set<Content> contents;
+
+  @OneToMany(mappedBy = "course")
+  private Set<Forum> forums;
+
+  @OneToMany(mappedBy = "course")
+  private Set<Exam> exams;
+
+  @OneToMany(mappedBy = "course")
+  private Set<Enrollment> enrollments;
+
+  @OneToMany(mappedBy = "course")
+  private Set<Report> reports;
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
+
+  @ManyToOne
+  @JoinColumn(name = "instructor_id", nullable = false)
+  private User instructor;
 }

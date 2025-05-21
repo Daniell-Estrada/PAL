@@ -1,11 +1,11 @@
 package com.example.pal.repository;
 
-import com.example.pal.model.Content;
+import com.example.pal.model.Enrollment;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ContentRepository extends JpaRepository<Content, Long> {
-  List<Content> findByCourseId(Long courseId);
+public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+  List<Enrollment> findByCourseId(Long courseId);
 }
