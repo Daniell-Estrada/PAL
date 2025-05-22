@@ -1,15 +1,12 @@
 package com.example.pal.controller;
 
+import com.example.pal.dto.enrollment.EnrolledCourseDTO;
 import com.example.pal.dto.enrollment.EnrollmentDTO;
-import com.example.pal.dto.enrollment.RegisterEnrollmentDTO;
 import com.example.pal.service.EnrollmentService;
-import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,8 +18,10 @@ public class EnrollmentController {
   @PostMapping("/register")
   @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
   public ResponseEntity<EnrollmentDTO> registerEnrollment(
-      @Valid @RequestBody RegisterEnrollmentDTO enrollmentDTO) {
-    return ResponseEntity.ok(enrollmentService.registerEnrollment(enrollmentDTO));
+      @RequestParam Long studentId, @RequestBody Long courseId) {
+    System.out.println("Student ID: " + studentId);
+    System.out.println("Course ID: " + courseId);
+    return ResponseEntity.ok(enrollmentService.registerEnrollment(studentId, courseId));
   }
 
   @GetMapping("/all")
@@ -40,7 +39,7 @@ public class EnrollmentController {
   @GetMapping("/student/{studentId}")
   @PreAuthorize(
       "hasRole('ADMIN') or hasRole('INSTRUCTOR') or #studentId == authentication.principal.id")
-  public ResponseEntity<List<EnrollmentDTO>> getEnrollmentsByStudentId(
+  public ResponseEntity<List<EnrolledCourseDTO>> getEnrollmentsByStudentId(
       @PathVariable Long studentId) {
     return ResponseEntity.ok(enrollmentService.getEnrollmentsByStudentId(studentId));
   }
@@ -53,13 +52,9 @@ public class EnrollmentController {
 
   @GetMapping("/my-courses")
   @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
-  public ResponseEntity<List<EnrollmentDTO>> getMyEnrollments() {
-    // Obtener el usuario autenticado
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
-
-    // Obtener las inscripciones del estudiante actual
-    return ResponseEntity.ok(enrollmentService.getEnrollmentsByUsername(username));
+  public ResponseEntity<List<EnrolledCourseDTO>> getMyEnrollments(@RequestParam Long studentId) {
+    System.out.println("Student ID: " + studentId);
+    return ResponseEntity.ok(enrollmentService.getEnrollmentsByStudentId(studentId));
   }
 
   @PutMapping("/update-progress/{enrollmentId}")
@@ -70,9 +65,9 @@ public class EnrollmentController {
     return ResponseEntity.ok(enrollmentService.updateProgress(enrollmentId, percentage));
   }
 
-    @PatchMapping("/{enrollmentId}/complete")
-    public ResponseEntity<EnrollmentDTO> markAsCompleted(@PathVariable Long enrollmentId) {
-        EnrollmentDTO enrollmentDTO = enrollmentService.markAsCompleted(enrollmentId);
-        return ResponseEntity.ok(enrollmentDTO);
-    }
+  @PatchMapping("/{enrollmentId}/complete")
+  public ResponseEntity<EnrollmentDTO> markAsCompleted(@PathVariable Long enrollmentId) {
+    EnrollmentDTO enrollmentDTO = enrollmentService.markAsCompleted(enrollmentId);
+    return ResponseEntity.ok(enrollmentDTO);
+  }
 }

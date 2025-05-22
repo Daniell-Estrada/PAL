@@ -1,7 +1,7 @@
 package com.example.pal.service;
 
+import com.example.pal.dto.enrollment.EnrolledCourseDTO;
 import com.example.pal.dto.enrollment.EnrollmentDTO;
-import com.example.pal.dto.enrollment.RegisterEnrollmentDTO;
 import com.example.pal.model.Course;
 import com.example.pal.model.Enrollment;
 import com.example.pal.model.User;
@@ -27,26 +27,25 @@ public class EnrollmentService {
 
   @Autowired private ModelMapper modelMapper;
 
-  public EnrollmentDTO registerEnrollment(RegisterEnrollmentDTO enrollmentDTO) {
+  public EnrollmentDTO registerEnrollment(Long studentId, Long courseId) {
     // Verificar si el estudiante ya está inscrito en el curso
-    if (enrollmentRepository.existsByStudentIdAndCourseId(
-        enrollmentDTO.getStudentId(), enrollmentDTO.getCourseId())) {
+    if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
       throw new IllegalStateException("El estudiante ya está inscrito en este curso");
     }
 
     // Obtener el estudiante y el curso
     User student =
         userRepository
-            .findById(enrollmentDTO.getStudentId())
+            .findById(studentId)
             .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
 
     Course course =
         courseRepository
-            .findById(enrollmentDTO.getCourseId())
+            .findById(courseId)
             .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
 
     // Verificar pago si el curso tiene costo
-    if (course.getPrice() > 0 && !enrollmentDTO.isPaid()) {
+    if (course.getPrice() > 0) {
       throw new IllegalStateException("El pago es requerido para inscribirse en este curso");
     }
 
@@ -77,9 +76,29 @@ public class EnrollmentService {
     return modelMapper.map(enrollment, EnrollmentDTO.class);
   }
 
-  public List<EnrollmentDTO> getEnrollmentsByStudentId(Long studentId) {
+  public List<EnrolledCourseDTO> getEnrollmentsByStudentId(Long studentId) {
     return enrollmentRepository.findByStudentId(studentId).stream()
-        .map(enrollment -> modelMapper.map(enrollment, EnrollmentDTO.class))
+        .map(
+            enrollment -> {
+              EnrolledCourseDTO dto = new EnrolledCourseDTO();
+
+              // Información básica de la inscripción
+              dto.setId(enrollment.getId());
+              dto.setTitle(enrollment.getCourse().getTitle());
+              dto.setDescription(enrollment.getCourse().getDescription());
+              dto.setEnrollmentDate(enrollment.getEnrollmentDate());
+
+              // Mapeo del estado según el formato requerido
+              String status = enrollment.getStatus().toLowerCase();
+              dto.setStatus(status);
+
+              dto.setProgress(enrollment.getPercentage());
+
+              dto.setInstructorName(enrollment.getCourse().getInstructor().getUsername());
+              dto.setCategoryName(enrollment.getCourse().getCategory().getName());
+
+              return dto;
+            })
         .collect(Collectors.toList());
   }
 
@@ -131,11 +150,13 @@ public class EnrollmentService {
     return modelMapper.map(updatedEnrollment, EnrollmentDTO.class);
   }
 
-    public EnrollmentDTO markAsCompleted(Long enrollmentId) {
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
-        enrollment.setStatus("completado");
-        enrollmentRepository.save(enrollment);
-        return modelMapper.map(enrollment, EnrollmentDTO.class);
-    }
+  public EnrollmentDTO markAsCompleted(Long enrollmentId) {
+    Enrollment enrollment =
+        enrollmentRepository
+            .findById(enrollmentId)
+            .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
+    enrollment.setStatus("completado");
+    enrollmentRepository.save(enrollment);
+    return modelMapper.map(enrollment, EnrollmentDTO.class);
+  }
 }

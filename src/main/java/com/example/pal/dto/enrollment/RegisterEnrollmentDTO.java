@@ -13,4 +13,3 @@ public class RegisterEnrollmentDTO {
 
   private boolean paid;
 }
-
