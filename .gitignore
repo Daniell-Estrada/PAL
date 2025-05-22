@@ -95,4 +95,6 @@ gradle-app.setting
 ### Spring properties ###
 **/application.properties
 
-/uploads/
+uploads/
+
+certificates/

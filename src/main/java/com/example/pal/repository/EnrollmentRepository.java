@@ -1,6 +1,8 @@
 package com.example.pal.repository;
 
 import com.example.pal.model.Enrollment;
+import com.example.pal.model.User;
+
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -69,4 +69,10 @@ public class EnrollmentController {
 
     return ResponseEntity.ok(enrollmentService.updateProgress(enrollmentId, percentage));
   }
+
+    @PatchMapping("/{enrollmentId}/complete")
+    public ResponseEntity<EnrollmentDTO> markAsCompleted(@PathVariable Long enrollmentId) {
+        EnrollmentDTO enrollmentDTO = enrollmentService.markAsCompleted(enrollmentId);
+        return ResponseEntity.ok(enrollmentDTO);
+    }
 }

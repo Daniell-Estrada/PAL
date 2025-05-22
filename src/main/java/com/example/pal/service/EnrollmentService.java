@@ -130,4 +130,12 @@ public class EnrollmentService {
     Enrollment updatedEnrollment = enrollmentRepository.save(enrollment);
     return modelMapper.map(updatedEnrollment, EnrollmentDTO.class);
   }
+
+    public EnrollmentDTO markAsCompleted(Long enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
+        enrollment.setStatus("completado");
+        enrollmentRepository.save(enrollment);
+        return modelMapper.map(enrollment, EnrollmentDTO.class);
+    }
 }
