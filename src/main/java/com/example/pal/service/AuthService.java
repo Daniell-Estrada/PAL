@@ -28,9 +28,6 @@ public class AuthService {
 
   public LoginResponseDTO login(LoginRequestDTO loginRequest) {
     User user = userRepository.findByUsername(loginRequest.getUsername());
-    System.out.println(user.getUsername());
-    System.out.println(user.getPassword());
-    System.out.println(loginRequest.getPassword());
 
     if (user == null) {
       throw new BadCredentialsException("Usuario o contraseña incorrectos");

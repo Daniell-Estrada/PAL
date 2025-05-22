@@ -5,9 +5,7 @@ import com.example.pal.dto.course.CourseSearchDTO;
 import com.example.pal.dto.course.CreateCourseDTO;
 import com.example.pal.dto.course.UpdateCourseDTO;
 import com.example.pal.service.CourseService;
-
 import jakarta.validation.Valid;
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
-  @Autowired
-  private CourseService courseService;
+  @Autowired private CourseService courseService;
 
   @PostMapping("/create")
   public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CreateCourseDTO courseDTO) {
@@ -61,8 +58,7 @@ public class CourseController {
 
   @PatchMapping("/update/{id}")
   public ResponseEntity<CourseDTO> partialUpdateCourse(
-      @PathVariable Long id,
-      @RequestBody UpdateCourseDTO courseDetails) {
+      @PathVariable Long id, @RequestBody UpdateCourseDTO courseDetails) {
     return ResponseEntity.ok(courseService.partialUpdateCourse(id, courseDetails));
   }
 
@@ -83,7 +79,6 @@ public class CourseController {
 
   @GetMapping("/by-category/{categoryName}")
   public ResponseEntity<List<CourseDTO>> getCoursesByCategory(@PathVariable String categoryName) {
-    System.out.print(categoryName);
     List<CourseDTO> courses = courseService.getCoursesByCategory(categoryName);
     if (courses.isEmpty()) {
       return ResponseEntity.noContent().build();
@@ -98,7 +93,7 @@ public class CourseController {
       @RequestParam(required = false) String difficulty,
       @RequestParam(required = false) String sortBy,
       @RequestParam(required = false) Long categoryId // Nuevo parámetro para filtrar por categoría
-  ) {
+      ) {
     CourseSearchDTO dto = new CourseSearchDTO();
     dto.setKeyword(keyword);
     dto.setFree(free);
@@ -108,5 +103,4 @@ public class CourseController {
 
     return courseService.searchCourses(dto);
   }
-
 }

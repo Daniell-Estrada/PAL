@@ -19,8 +19,6 @@ public class EnrollmentController {
   @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
   public ResponseEntity<EnrollmentDTO> registerEnrollment(
       @RequestParam Long studentId, @RequestBody Long courseId) {
-    System.out.println("Student ID: " + studentId);
-    System.out.println("Course ID: " + courseId);
     return ResponseEntity.ok(enrollmentService.registerEnrollment(studentId, courseId));
   }
 
@@ -53,7 +51,6 @@ public class EnrollmentController {
   @GetMapping("/my-courses")
   @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
   public ResponseEntity<List<EnrolledCourseDTO>> getMyEnrollments(@RequestParam Long studentId) {
-    System.out.println("Student ID: " + studentId);
     return ResponseEntity.ok(enrollmentService.getEnrollmentsByStudentId(studentId));
   }
 
