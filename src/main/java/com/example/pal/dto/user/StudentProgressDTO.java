@@ -6,7 +6,8 @@ import lombok.Data;
 
 @Data
 public class StudentProgressDTO {
-  private String studentName;
+  private String username;
+  private String email;
   private Double courseProgress;
   private Double averageScore;
   private Integer forumMessages;

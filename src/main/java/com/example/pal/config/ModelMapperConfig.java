@@ -31,8 +31,7 @@ public class ModelMapperConfig {
         .typeMap(Enrollment.class, StudentProgressDTO.class)
         .addMappings(
             mapper ->
-                mapper.map(
-                    src -> src.getStudent().getUsername(), StudentProgressDTO::setStudentName));
+                mapper.map(src -> src.getStudent().getUsername(), StudentProgressDTO::setUsername));
 
     modelMapper
         .getConfiguration()

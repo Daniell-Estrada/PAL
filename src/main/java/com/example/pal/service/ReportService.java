@@ -12,6 +12,8 @@ import com.example.pal.repository.EnrollmentRepository;
 import com.example.pal.repository.ForumPostRepository;
 import com.example.pal.repository.ScoreRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +22,11 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -73,5 +80,51 @@ public class ReportService {
         });
     report.setStudents(students);
     return report;
+  }
+
+  public ResponseEntity<Resource> exportReportCSV(Long courseId) {
+    ProgressReportDTO report = generateProgressReport(courseId);
+
+    // Generar CSV
+    StringBuilder csvContent = new StringBuilder();
+    csvContent.append("Curso,Fecha de Generación\n");
+    csvContent
+        .append(report.getCourseTitle())
+        .append(",")
+        .append(report.getGeneratedDate())
+        .append("\n\n");
+
+    csvContent.append("Estudiante,Email,Progreso,Promedio,Mensajes en Foro\n");
+
+    for (StudentProgressDTO student : report.getStudents()) {
+      csvContent.append(student.getUsername()).append(",");
+      csvContent.append(student.getEmail()).append(",");
+      csvContent.append(student.getCourseProgress()).append("%,");
+      csvContent.append(student.getAverageScore()).append(",");
+      csvContent.append(student.getForumMessages()).append("\n");
+    }
+
+    byte[] bytes = csvContent.toString().getBytes(StandardCharsets.UTF_8);
+    ByteArrayResource resource = new ByteArrayResource(bytes);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + courseId + ".csv")
+        .contentType(MediaType.parseMediaType("text/csv"))
+        .contentLength(bytes.length)
+        .body(resource);
+  }
+
+  public ResponseEntity<Resource> exportReportPDF(Long courseId) {
+    ProgressReportDTO report = generateProgressReport(courseId);
+
+    // En una implementación real, aquí generaríamos un PDF
+    // Por simplicidad, devolvemos un PDF vacío
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + courseId + ".pdf")
+        .contentType(MediaType.APPLICATION_PDF)
+        .body(resource);
   }
 }
