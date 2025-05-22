@@ -1,6 +1,6 @@
 package com.example.pal.controller;
 
-import com.example.pal.dto.certificado.SolicitudConstanciaDTO;
+import com.example.pal.dto.solicitudConstancia.SolicitudConstanciaDTO;
 import com.example.pal.model.SolicitudConstancia;
 import com.example.pal.service.SolicitudConstanciaService;
 import jakarta.validation.Valid;

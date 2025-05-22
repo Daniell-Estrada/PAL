@@ -10,6 +10,8 @@ import com.example.pal.model.User;
 import com.example.pal.repository.CategoryRepository;
 import com.example.pal.repository.CourseRepository;
 import com.example.pal.repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +34,17 @@ public class CourseService {
   @Autowired
   private UserRepository userRepository;
 
+  @PostConstruct
+  public void setupMapper() {
+    modelMapper.typeMap(Course.class, CourseDTO.class).addMappings(mapper -> {
+      mapper.map(src -> src.getCategory().getId(), CourseDTO::setCategoryId);
+      mapper.map(src -> src.getInstructor().getId(), CourseDTO::setInstructorId);
+    });
+  }
+
   public CourseDTO createCourse(CreateCourseDTO courseDTO) {
     if (courseRepository.existsByTitle(courseDTO.getTitle())) {
-        throw new IllegalArgumentException("Ya existe un curso con ese título.");
+      throw new IllegalArgumentException("Ya existe un curso con ese título.");
     }
 
     Category category = categoryRepository.findById(courseDTO.getCategoryId())
@@ -53,7 +63,7 @@ public class CourseService {
 
     Course savedCourse = courseRepository.save(course);
     return modelMapper.map(savedCourse, CourseDTO.class);
-}
+  }
 
   public List<CourseDTO> getAllCourses() {
     return courseRepository.findAll().stream()
@@ -76,6 +86,37 @@ public class CourseService {
 
     course = modelMapper.map(courseDetails, Course.class);
     course.setId(id);
+
+    Course updatedCourse = courseRepository.save(course);
+    return modelMapper.map(updatedCourse, CourseDTO.class);
+  }
+
+  public CourseDTO partialUpdateCourse(Long id, UpdateCourseDTO courseDetails) {
+    Course course = findCourseById(id);
+
+    if (courseDetails.getTitle() != null) {
+      course.setTitle(courseDetails.getTitle());
+    }
+    if (courseDetails.getDescription() != null) {
+      course.setDescription(courseDetails.getDescription());
+    }
+    if (courseDetails.getPrice() != null) {
+      course.setPrice(courseDetails.getPrice());
+    }
+    if (courseDetails.getCategoryId() != null) {
+      Category category = findCategoryById(courseDetails.getCategoryId());
+      course.setCategory(category);
+    }
+    if (courseDetails.getInstructorId() != null) {
+      User instructor = findUserById(courseDetails.getInstructorId());
+      course.setInstructor(instructor);
+    }
+    if (courseDetails.getDifficulty() != null) {
+      course.setDifficulty(courseDetails.getDifficulty());
+    }
+    if (courseDetails.getFree() != null) {
+      course.setFree(courseDetails.getFree());
+    }
 
     Course updatedCourse = courseRepository.save(course);
     return modelMapper.map(updatedCourse, CourseDTO.class);

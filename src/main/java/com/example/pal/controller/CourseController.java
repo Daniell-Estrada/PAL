@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,7 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
-  @Autowired private CourseService courseService;
+  @Autowired
+  private CourseService courseService;
 
   @PostMapping("/create")
   public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CreateCourseDTO courseDTO) {
@@ -47,6 +48,13 @@ public class CourseController {
   public ResponseEntity<CourseDTO> updateCourse(
       @PathVariable Long id, @RequestBody UpdateCourseDTO courseDetails) {
     return ResponseEntity.ok(courseService.updateCourse(id, courseDetails));
+  }
+
+  @PatchMapping("/update/{id}")
+  public ResponseEntity<CourseDTO> partialUpdateCourse(
+      @PathVariable Long id,
+      @RequestBody UpdateCourseDTO courseDetails) {
+    return ResponseEntity.ok(courseService.partialUpdateCourse(id, courseDetails));
   }
 
   @DeleteMapping("/delete/{id}")
@@ -79,8 +87,7 @@ public class CourseController {
       @RequestParam(required = false) String keyword,
       @RequestParam(required = false) Boolean free,
       @RequestParam(required = false) String difficulty,
-      @RequestParam(required = false) String sortBy)
-  {
+      @RequestParam(required = false) String sortBy) {
     CourseSearchDTO dto = new CourseSearchDTO();
     dto.setKeyword(keyword);
     dto.setFree(free);
@@ -88,6 +95,6 @@ public class CourseController {
     dto.setSortBy(sortBy);
 
     return courseService.searchCourses(dto);
-}
+  }
 
 }

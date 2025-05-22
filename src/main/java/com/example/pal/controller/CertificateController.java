@@ -38,4 +38,21 @@ public class CertificateController {
                 .header("Content-Disposition", "attachment; filename=certificado.pdf")
                 .body(certificateService.getCertificatePdf(certificateId));
     }
+
+    // obtener todos los certificados 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllCertificates() {
+        return ResponseEntity.ok(certificateService.getAllCertificates());
+    }
+
+    // eliminar un certificado
+    @DeleteMapping("/delete/{certificateId}")
+    public ResponseEntity<String> deleteCertificate(@PathVariable Long certificateId) {
+        try {
+            certificateService.deleteCertificate(certificateId);
+            return ResponseEntity.ok("Certificado eliminado exitosamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al eliminar el certificado: " + e.getMessage());
+        }
+    }
 }
