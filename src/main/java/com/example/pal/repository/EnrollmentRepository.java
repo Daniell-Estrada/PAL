@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+    List<Enrollment> findByCourseId(Long courseId);
+    
     boolean existsByStudentAndCourse(User student, Course course);
 
     Optional<Enrollment> findByStudentAndCourse(User student, Course course);
