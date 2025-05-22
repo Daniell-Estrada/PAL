@@ -96,12 +96,15 @@ public class CourseController {
       @RequestParam(required = false) String keyword,
       @RequestParam(required = false) Boolean free,
       @RequestParam(required = false) String difficulty,
-      @RequestParam(required = false) String sortBy) {
+      @RequestParam(required = false) String sortBy,
+      @RequestParam(required = false) Long categoryId // Nuevo parámetro para filtrar por categoría
+  ) {
     CourseSearchDTO dto = new CourseSearchDTO();
     dto.setKeyword(keyword);
     dto.setFree(free);
     dto.setDifficulty(difficulty);
     dto.setSortBy(sortBy);
+    dto.setCategoryId(categoryId);
 
     return courseService.searchCourses(dto);
   }

@@ -183,10 +183,21 @@ public class CourseService {
   }
 
   public List<CourseDTO> searchCourses(CourseSearchDTO dto) {
-    List<Course> results = courseRepository.searchCourses(
-        dto.getKeyword(),
-        dto.getFree(),
-        dto.getDifficulty());
+    List<Course> results;
+
+    // Si categoryId está presente, filtra por categoría también
+    if (dto.getCategoryId() != null) {
+      results = courseRepository.searchCoursesByCategory(
+          dto.getKeyword(),
+          dto.getFree(),
+          dto.getDifficulty(),
+          dto.getCategoryId());
+    } else {
+      results = courseRepository.searchCourses(
+          dto.getKeyword(),
+          dto.getFree(),
+          dto.getDifficulty());
+    }
 
     // Ordenamiento por fecha si se solicita
     if ("date".equalsIgnoreCase(dto.getSortBy())) {
