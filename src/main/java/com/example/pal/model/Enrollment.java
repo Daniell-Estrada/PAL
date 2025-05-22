@@ -2,6 +2,7 @@ package com.example.pal.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"student_id", "course_id"})
+        @UniqueConstraint(columnNames = { "student_id", "course_id" })
 })
 public class Enrollment {
     @Id
@@ -33,5 +34,9 @@ public class Enrollment {
     private LocalDateTime enrollmentDate = LocalDateTime.now();
 
     @Column(nullable = false)
+    @Pattern(regexp = "sin iniciar|en progreso|completado", message = "El status debe ser 'sin iniciar', 'en progreso' o 'completado'")
     private String status = "en progreso"; // "en progreso", "completado", etc.
+
+    @Column(nullable = false)
+    private Integer percentage = 0;
 }

@@ -35,4 +35,10 @@ public class EnrollmentController {
         EnrollmentDTO enrollment = enrollmentService.togglePaid(enrollmentId);
         return ResponseEntity.ok(enrollment);
     }
+
+    @PatchMapping("/{enrollmentId}/complete")
+    public ResponseEntity<EnrollmentDTO> markAsCompleted(@PathVariable Long enrollmentId) {
+        EnrollmentDTO enrollmentDTO = enrollmentService.markAsCompleted(enrollmentId);
+        return ResponseEntity.ok(enrollmentDTO);
+    }
 }
