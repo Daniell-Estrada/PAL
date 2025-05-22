@@ -58,14 +58,20 @@ public class CertificateController {
     return ResponseEntity.ok(certificateService.getAllCertificates());
   }
 
-  // eliminar un certificado
-  @DeleteMapping("/delete/{certificateId}")
-  public ResponseEntity<String> deleteCertificate(@PathVariable Long certificateId) {
-    try {
-      certificateService.deleteCertificate(certificateId);
-      return ResponseEntity.ok("Certificado eliminado exitosamente.");
-    } catch (Exception e) {
-      return ResponseEntity.status(500).body("Error al eliminar el certificado: " + e.getMessage());
+    // eliminar un certificado
+    @DeleteMapping("/delete/{certificateId}")
+    public ResponseEntity<String> deleteCertificate(@PathVariable Long certificateId) {
+        try {
+            certificateService.deleteCertificate(certificateId);
+            return ResponseEntity.ok("Certificado eliminado exitosamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al eliminar el certificado: " + e.getMessage());
+        }
     }
-  }
+
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getCertificatesByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(certificateService.getCertificatesByStudentId(studentId));
+    }
 }

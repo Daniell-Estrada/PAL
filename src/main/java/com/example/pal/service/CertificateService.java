@@ -144,4 +144,25 @@ public class CertificateService {
             .orElseThrow(() -> new RuntimeException("Certificado no encontrado"));
     certificateRepository.delete(certificate);
   }
+
+    /**
+     * Obtener certificados de un estudiante por ID.
+     */
+    public List<CertificateDTO> getCertificatesByStudentId(Long studentId) {
+        User user = userRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        List<Certificate> certificates = certificateRepository.findByUserId(user.getId());
+        List<CertificateDTO> dtos = new ArrayList<>();
+        for (Certificate cert : certificates) {
+            CertificateDTO dto = new CertificateDTO();
+            dto.setId(cert.getId());
+            dto.setStudentName(cert.getUser().getUsername());
+            dto.setCourseTitle(cert.getCourse().getTitle());
+            dto.setIssueDate(cert.getIssueDate());
+            dtos.add(dto);
+        }
+        return dtos;
+
+    }
 }
+

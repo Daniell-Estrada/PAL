@@ -2,6 +2,7 @@ package com.example.pal.controller;
 
 import com.example.pal.dto.enrollment.EnrolledCourseDTO;
 import com.example.pal.dto.enrollment.EnrollmentDTO;
+import com.example.pal.dto.enrollment.RegisterEnrollmentDTO;
 import com.example.pal.service.EnrollmentService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,9 @@ public class EnrollmentController {
   @PostMapping("/register")
   @PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMIN')")
   public ResponseEntity<EnrollmentDTO> registerEnrollment(
-      @RequestParam Long studentId, @RequestBody Long courseId) {
-    return ResponseEntity.ok(enrollmentService.registerEnrollment(studentId, courseId));
+      @RequestBody RegisterEnrollmentDTO registerEnrollmentDTO) {
+
+    return ResponseEntity.ok(enrollmentService.registerEnrollment(registerEnrollmentDTO));
   }
 
   @GetMapping("/all")
