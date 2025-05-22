@@ -44,6 +44,15 @@ public class CourseController {
     return ResponseEntity.ok(courseService.getCourseById(id));
   }
 
+  @GetMapping("/by-instructor/{instructorId}")
+  public ResponseEntity<List<CourseDTO>> getCoursesByInstructor(@PathVariable Long instructorId) {
+    List<CourseDTO> courses = courseService.getCoursesByInstructor(instructorId);
+    if (courses.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(courses);
+  }
+
   @PutMapping("/update/{id}")
   public ResponseEntity<CourseDTO> updateCourse(
       @PathVariable Long id, @RequestBody UpdateCourseDTO courseDetails) {

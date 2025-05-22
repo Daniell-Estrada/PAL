@@ -14,6 +14,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
   Course findByTitle(String title);
 
+  List<Course> findByInstructorId(Long instructorId);
+
   boolean existsByTitle(String title);
 
   @Query("SELECT c FROM Course c WHERE c.price = :price")

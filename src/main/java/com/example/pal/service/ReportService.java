@@ -2,6 +2,7 @@ package com.example.pal.service;
 
 import com.example.pal.dto.report.ProgressReportDTO;
 import com.example.pal.dto.score.ExamResultDTO;
+import com.example.pal.dto.user.InstructorReportDTO;
 import com.example.pal.dto.user.StudentProgressDTO;
 import com.example.pal.model.Course;
 import com.example.pal.model.Enrollment;
@@ -11,9 +12,8 @@ import com.example.pal.repository.CourseRepository;
 import com.example.pal.repository.EnrollmentRepository;
 import com.example.pal.repository.ForumPostRepository;
 import com.example.pal.repository.ScoreRepository;
+import com.example.pal.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -22,16 +22,12 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+  @Autowired private UserRepository userRepository;
   @Autowired private EnrollmentRepository enrollmentRepository;
   @Autowired private ScoreRepository scoreRepository;
   @Autowired private ForumPostRepository forumPostRepository;
@@ -82,49 +78,40 @@ public class ReportService {
     return report;
   }
 
-  public ResponseEntity<Resource> exportReportCSV(Long courseId) {
-    ProgressReportDTO report = generateProgressReport(courseId);
+  public InstructorReportDTO generateInstructorReport(Long instructorId) {
+    User instructor =
+        userRepository
+            .findById(instructorId)
+            .orElseThrow(() -> new EntityNotFoundException("Instructor no encontrado"));
 
-    // Generar CSV
-    StringBuilder csvContent = new StringBuilder();
-    csvContent.append("Curso,Fecha de Generación\n");
-    csvContent
-        .append(report.getCourseTitle())
-        .append(",")
-        .append(report.getGeneratedDate())
-        .append("\n\n");
+    List<Course> courses = courseRepository.findByInstructorId(instructorId);
 
-    csvContent.append("Estudiante,Email,Progreso,Promedio,Mensajes en Foro\n");
+    InstructorReportDTO report = new InstructorReportDTO();
 
-    for (StudentProgressDTO student : report.getStudents()) {
-      csvContent.append(student.getUsername()).append(",");
-      csvContent.append(student.getEmail()).append(",");
-      csvContent.append(student.getCourseProgress()).append("%,");
-      csvContent.append(student.getAverageScore()).append(",");
-      csvContent.append(student.getForumMessages()).append("\n");
-    }
+    List<Enrollment> enrollments =
+        courses.stream()
+            .flatMap(course -> enrollmentRepository.findByCourseId(course.getId()).stream())
+            .collect(Collectors.toList());
 
-    byte[] bytes = csvContent.toString().getBytes(StandardCharsets.UTF_8);
-    ByteArrayResource resource = new ByteArrayResource(bytes);
+    report.setTotalCourses(courses.size());
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + courseId + ".csv")
-        .contentType(MediaType.parseMediaType("text/csv"))
-        .contentLength(bytes.length)
-        .body(resource);
-  }
+    report.setTotalStudents(enrollments.size());
+    report.setCompletionRate(
+        enrollments.stream().mapToDouble(Enrollment::getPercentage).average().orElse(0.0));
 
-  public ResponseEntity<Resource> exportReportPDF(Long courseId) {
-    ProgressReportDTO report = generateProgressReport(courseId);
+    report.setCompletionRate(
+        courses.stream()
+            .flatMap(course -> enrollmentRepository.findByCourseId(course.getId()).stream())
+            .mapToDouble(Enrollment::getPercentage)
+            .average()
+            .orElse(0.0));
+    report.setAverageScore(
+        courses.stream()
+            .flatMap(course -> scoreRepository.findByExamCourseId(course.getId()).stream())
+            .mapToDouble(Score::getScore)
+            .average()
+            .orElse(0.0));
 
-    // En una implementación real, aquí generaríamos un PDF
-    // Por simplicidad, devolvemos un PDF vacío
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_" + courseId + ".pdf")
-        .contentType(MediaType.APPLICATION_PDF)
-        .body(resource);
+    return report;
   }
 }

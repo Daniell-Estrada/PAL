@@ -1,10 +1,10 @@
 package com.example.pal.controller;
 
 import com.example.pal.dto.report.ProgressReportDTO;
+import com.example.pal.dto.user.InstructorReportDTO;
 import com.example.pal.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,14 +19,8 @@ public class ReportController {
     return ResponseEntity.ok(reportService.generateProgressReport(courseId));
   }
 
-  @GetMapping("/export/{courseId}")
-  public ResponseEntity<Resource> exportReport(
-      @PathVariable Long courseId, @RequestParam(defaultValue = "csv") String format) {
-
-    if ("pdf".equalsIgnoreCase(format)) {
-      return reportService.exportReportPDF(courseId);
-    } else {
-      return reportService.exportReportCSV(courseId);
-    }
+  @GetMapping("/instructor/{instructorId}")
+  public ResponseEntity<InstructorReportDTO> getInstructorReport(@PathVariable Long instructorId) {
+    return ResponseEntity.ok(reportService.generateInstructorReport(instructorId));
   }
 }

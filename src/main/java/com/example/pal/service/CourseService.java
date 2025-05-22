@@ -76,6 +76,13 @@ public class CourseService {
     return modelMapper.map(course, CourseDTO.class);
   }
 
+  public List<CourseDTO> getCoursesByInstructor(Long instructorId) {
+    List<Course> courses = courseRepository.findByInstructorId(instructorId);
+    return courses.stream()
+        .map(course -> modelMapper.map(course, CourseDTO.class))
+        .collect(Collectors.toList());
+  }
+
   public CourseDTO updateCourse(Long id, UpdateCourseDTO courseDetails) {
     Course course = findCourseById(id);
 
