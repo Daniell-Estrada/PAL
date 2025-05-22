@@ -55,4 +55,10 @@ public class CertificateController {
             return ResponseEntity.status(500).body("Error al eliminar el certificado: " + e.getMessage());
         }
     }
+
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getCertificatesByStudentId(@PathVariable Long studentId) {
+        return ResponseEntity.ok(certificateService.getCertificatesByStudentId(studentId));
+    }
 }

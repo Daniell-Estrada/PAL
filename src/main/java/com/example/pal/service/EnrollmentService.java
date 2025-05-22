@@ -2,6 +2,7 @@ package com.example.pal.service;
 
 import com.example.pal.dto.enrollment.EnrolledCourseDTO;
 import com.example.pal.dto.enrollment.EnrollmentDTO;
+import com.example.pal.dto.enrollment.RegisterEnrollmentDTO;
 import com.example.pal.model.Course;
 import com.example.pal.model.Enrollment;
 import com.example.pal.model.User;
@@ -27,25 +28,26 @@ public class EnrollmentService {
 
   @Autowired private ModelMapper modelMapper;
 
-  public EnrollmentDTO registerEnrollment(Long studentId, Long courseId) {
+  public EnrollmentDTO registerEnrollment(RegisterEnrollmentDTO registerEnrollmentDTO) {
     // Verificar si el estudiante ya está inscrito en el curso
-    if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
+    if (enrollmentRepository.existsByStudentIdAndCourseId(
+        registerEnrollmentDTO.getStudentId(), registerEnrollmentDTO.getCourseId())) {
       throw new IllegalStateException("El estudiante ya está inscrito en este curso");
     }
 
     // Obtener el estudiante y el curso
     User student =
         userRepository
-            .findById(studentId)
+            .findById(registerEnrollmentDTO.getStudentId())
             .orElseThrow(() -> new EntityNotFoundException("Estudiante no encontrado"));
 
     Course course =
         courseRepository
-            .findById(courseId)
+            .findById(registerEnrollmentDTO.getCourseId())
             .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
 
     // Verificar pago si el curso tiene costo
-    if (course.getPrice() > 0) {
+    if (course.getPrice() > 0 && !registerEnrollmentDTO.isPaid()) {
       throw new IllegalStateException("El pago es requerido para inscribirse en este curso");
     }
 
