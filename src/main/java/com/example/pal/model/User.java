@@ -36,6 +36,7 @@ public class User {
   private Set<Role> roles;
 
   @OneToMany(mappedBy = "student")
+  @JsonIgnore
   private Set<Enrollment> enrollments;
 
   @OneToMany(mappedBy = "user")

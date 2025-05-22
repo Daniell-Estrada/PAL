@@ -1,5 +1,6 @@
 package com.example.pal.service;
 
+import com.example.pal.dto.certificado.CertificateDTO;
 import com.example.pal.model.Certificate;
 import com.example.pal.model.Course;
 import com.example.pal.model.Enrollment;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CertificateService {
@@ -88,5 +91,31 @@ public class CertificateService {
                 .orElseThrow(() -> new RuntimeException("Certificado no encontrado"));
         // Leer el archivo PDF desde el sistema de archivos
         return Files.readAllBytes(Paths.get(certificate.getCertificateFile()));
+    }
+
+    /**
+     * Obtener todos los certificados generados.
+     */
+    public List<CertificateDTO> getAllCertificates() {
+        List<Certificate> certificates = certificateRepository.findAll();
+        List<CertificateDTO> dtos = new ArrayList<>();
+        for (Certificate cert : certificates) {
+            CertificateDTO dto = new CertificateDTO();
+            dto.setId(cert.getId());
+            dto.setStudentName(cert.getUser().getUsername());
+            dto.setCourseTitle(cert.getCourse().getTitle());
+            dto.setIssueDate(cert.getIssueDate());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    /**
+     * Eliminar un certificado.
+     */
+    public void deleteCertificate(Long certificateId) {
+        Certificate certificate = certificateRepository.findById(certificateId)
+                .orElseThrow(() -> new RuntimeException("Certificado no encontrado"));  
+        certificateRepository.delete(certificate);
     }
 }

@@ -6,9 +6,9 @@ import lombok.Data;
 public class UpdateCourseDTO {
   private String title;
   private String description;
-  private double price;
+  private Double price;
   private Long instructorId;
   private Long categoryId;
   private String difficulty;
-  private boolean free;
+  private Boolean free;
 }

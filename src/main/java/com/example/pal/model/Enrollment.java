@@ -7,6 +7,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Data
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {
@@ -23,6 +25,7 @@ public class Enrollment {
     @NotNull(message = "El estudiante es obligatorio")
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
+    @JsonManagedReference
     private User student;
 
     @NotNull(message = "El curso es obligatorio")

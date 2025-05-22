@@ -1,6 +1,6 @@
 package com.example.pal.service;
 
-import com.example.pal.dto.certificado.SolicitudConstanciaDTO;
+import com.example.pal.dto.solicitudConstancia.SolicitudConstanciaDTO;
 import com.example.pal.model.SolicitudConstancia;
 import com.example.pal.repository.SolicitudConstanciaRepository;
 import jakarta.transaction.Transactional;
