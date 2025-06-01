@@ -14,7 +14,6 @@ import com.itextpdf.layout.properties.TextAlignment;
 
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

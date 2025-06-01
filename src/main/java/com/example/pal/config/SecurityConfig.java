@@ -30,43 +30,44 @@ public class SecurityConfig {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(
-            auth ->
-                auth
-                    // Endpoints públicos
-                    .requestMatchers(
-                        "/api-docs/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/auth/**")
-                    .permitAll()
+            auth -> auth
+                // Endpoints públicos
+                .requestMatchers(
+                    "/api-docs/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/auth/**")
+                .permitAll()
 
-                    // Endpoints para administradores
-                    .requestMatchers("/api/users/**")
-                    // .hasRole("ADMIN")
-                    .permitAll()
+                // Endpoints para administradores
+                .requestMatchers("/api/users/**")
+                // .hasRole("ADMIN")
+                .permitAll()
 
-                    // Endpoints para instructores
-                    .requestMatchers("/api/courses/**", "/api/content/**", "/api/reports/**")
-                    //            .hasAnyRole("ADMIN", "INSTRUCTOR")
-                    .permitAll()
+                // Endpoints para instructores
+                .requestMatchers("/api/courses/**", "/api/content/**", "/api/reports/**")
+                // .hasAnyRole("ADMIN", "INSTRUCTOR")
+                .permitAll()
 
-                    // Endpoints para estudiantes
-                    .requestMatchers(
-                        "/api/enrollments/**",
-                        "/api/exams/submit/**",
-                        "/api/exams/results/**",
-                        "/api/certificates/**")
-                    // .hasAnyRole("ADMIN", "INSTRUCTOR", "ESTUDIANTE")
-                    .permitAll()
+                // Endpoints para estudiantes
+                .requestMatchers(
+                    "/api/enrollments/**",
+                    "/api/exams/submit/**",
+                    "/api/exams/results/**",
+                    "/api/certificates/**")
+                // .hasAnyRole("ADMIN", "INSTRUCTOR", "ESTUDIANTE")
+                .permitAll()
 
-                    // Endpoints de lectura generales
-                    .requestMatchers(HttpMethod.GET, "/api/courses/**", "/api/categories/**")
-                    .permitAll()
+                // Endpoints de lectura generales
+                .requestMatchers(HttpMethod.GET, "/api/courses/**", "/api/categories/**")
+                .permitAll()
 
-                    // Por defecto, requerir autenticación
-                    .anyRequest()
-                    .authenticated())
+                // Por defecto, requerir autenticación
+                .anyRequest()
+                .authenticated())
+        .oauth2Login(oauth2 -> oauth2
+            .defaultSuccessUrl("/api/auth/user-oauth", true))
         .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
     return http.build();
@@ -89,26 +90,23 @@ public class SecurityConfig {
 
   @Bean
   public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-    UserDetails admin =
-        User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("admin123"))
-            .roles("ADMIN")
-            .build();
+    UserDetails admin = User.builder()
+        .username("admin")
+        .password(passwordEncoder.encode("admin123"))
+        .roles("ADMIN")
+        .build();
 
-    UserDetails instructor =
-        User.builder()
-            .username("instructor")
-            .password(passwordEncoder.encode("instructor123"))
-            .roles("INSTRUCTOR")
-            .build();
+    UserDetails instructor = User.builder()
+        .username("instructor")
+        .password(passwordEncoder.encode("instructor123"))
+        .roles("INSTRUCTOR")
+        .build();
 
-    UserDetails student =
-        User.builder()
-            .username("student")
-            .password(passwordEncoder.encode("student123"))
-            .roles("ESTUDIANTE")
-            .build();
+    UserDetails student = User.builder()
+        .username("student")
+        .password(passwordEncoder.encode("student123"))
+        .roles("ESTUDIANTE")
+        .build();
 
     return new InMemoryUserDetailsManager(admin, instructor, student);
   }
